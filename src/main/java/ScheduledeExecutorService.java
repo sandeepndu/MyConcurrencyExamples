@@ -1,4 +1,5 @@
-import javafx.util.Pair;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Comparator;
 import java.util.PriorityQueue;
@@ -9,7 +10,7 @@ public class ScheduledeExecutorService {
         final ExecutorService executorService = new ExecutorService();
         executorService.submit(() -> {
             System.out.println("task 1");
-        },5);
+        }, 5);
         executorService.submit(() -> {
             System.out.println("task 2");
         }, 3);
@@ -26,7 +27,7 @@ public class ScheduledeExecutorService {
     }
 
     private static class ExecutorService {
-        private final PriorityQueue<Pair<Runnable, Long>> queue = new PriorityQueue<>(Comparator.comparing(Pair::getValue));
+        private final PriorityQueue<Pair<Runnable, Long>> queue = new PriorityQueue<>(Comparator.comparing(Pair::getRight));
         private volatile boolean shutdown = false;
         private long currentSleepInMillis = Long.MAX_VALUE;
         private final Thread scheduler = getScheduler();
@@ -36,10 +37,10 @@ public class ScheduledeExecutorService {
         }
 
         public void submit(final Runnable task, int delayInSeconds) {
-            if(shutdown)
+            if (shutdown)
                 return;
             final long scheduledTimestamp = System.currentTimeMillis() + delayInSeconds * 1000;
-            queue.add(new Pair<>(task, scheduledTimestamp));
+            queue.add(Pair.of(task, scheduledTimestamp));
             scheduler.interrupt();
         }
 
@@ -52,8 +53,8 @@ public class ScheduledeExecutorService {
                     }
                     final Pair<Runnable, Long> top = queue.peek();
                     final long currentTime = System.currentTimeMillis();
-                    if (currentTime >=  top.getValue()) {
-                        queue.poll().getKey().run();
+                    if (currentTime >= top.getRight()) {
+                        queue.poll().getLeft().run();
                     }
                     currentSleepInMillis = queue.isEmpty() ? Long.MAX_VALUE : queue.peek().getValue() - currentTime;
                 }
