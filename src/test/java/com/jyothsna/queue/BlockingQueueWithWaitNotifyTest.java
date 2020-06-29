@@ -1,6 +1,5 @@
 package com.jyothsna.queue;
 
-import com.jyothsna.queue.queue.BlockingQueueWithWaitNotify;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
