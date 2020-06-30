@@ -10,20 +10,18 @@ import java.util.concurrent.Semaphore;
 public class BlockingQueueWithSemaphores<T> implements BlockingQueue<T> {
     private static final Logger logger = LoggerFactory.getLogger(BlockingQueueWithSemaphores.class);
     private final int capacity;
-    private final Queue<T> queue;
     private final Semaphore writeSemaphore;
     private final Semaphore pollSemaphore;
+    private final Queue<T> queue = new LinkedList<>();
 
     public BlockingQueueWithSemaphores(int capacity) {
         this.capacity = capacity;
-        this.queue = new LinkedList<>();
         this.writeSemaphore = new Semaphore(capacity);
         this.pollSemaphore = new Semaphore(0);
     }
 
     public BlockingQueueWithSemaphores() {
         this.capacity = Integer.MAX_VALUE;
-        this.queue = new LinkedList<>();
         this.writeSemaphore = new Semaphore(capacity);
         this.pollSemaphore = new Semaphore(0);
     }

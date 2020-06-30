@@ -9,16 +9,14 @@ import java.util.Queue;
 public class BlockingQueueWithWaitNotify<T> implements BlockingQueue<T> {
     private static final Logger logger = LoggerFactory.getLogger(BlockingQueueWithWaitNotify.class);
     private final int capacity;
-    private final Queue<T> queue;
+    private final Queue<T> queue = new LinkedList<>();
 
     public BlockingQueueWithWaitNotify(int capacity) {
         this.capacity = capacity;
-        this.queue = new LinkedList<>();
     }
 
     public BlockingQueueWithWaitNotify() {
         this.capacity = Integer.MAX_VALUE;
-        this.queue = new LinkedList<>();
     }
 
     @Override
