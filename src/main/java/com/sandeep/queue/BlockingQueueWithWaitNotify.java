@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class BlockingQueueWithWaitNotify<T> {
+public class BlockingQueueWithWaitNotify<T> implements BlockingQueue<T> {
     private static final Logger logger = LoggerFactory.getLogger(BlockingQueueWithWaitNotify.class);
     private final int capacity;
     private final Queue<T> queue;
@@ -21,6 +21,7 @@ public class BlockingQueueWithWaitNotify<T> {
         this.queue = new LinkedList<>();
     }
 
+    @Override
     public void offer(T element) throws InterruptedException {
         synchronized (queue) {
             while (queue.size() == capacity) {
@@ -33,6 +34,7 @@ public class BlockingQueueWithWaitNotify<T> {
         }
     }
 
+    @Override
     public T poll() throws InterruptedException {
         synchronized (queue) {
             while (queue.isEmpty()) {
