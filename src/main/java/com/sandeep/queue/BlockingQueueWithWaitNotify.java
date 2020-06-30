@@ -1,4 +1,4 @@
-package com.jyothsna.queue;
+package com.sandeep.queue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

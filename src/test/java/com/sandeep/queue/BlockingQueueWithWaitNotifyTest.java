@@ -1,4 +1,4 @@
-package com.jyothsna.queue;
+package com.sandeep.queue;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
