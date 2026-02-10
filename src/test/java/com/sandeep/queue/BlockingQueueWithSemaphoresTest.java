@@ -20,17 +20,17 @@ public class BlockingQueueWithSemaphoresTest {
     private static final int THREAD_COUNT = 10;
 
     @BeforeAll
-    private static void beforeAll() {
+    public static void beforeAll() {
         random = new Random();
     }
 
     @BeforeEach
-    private void beforeEach() {
+    public void beforeEach() {
         executorService = Executors.newFixedThreadPool(THREAD_COUNT);
     }
 
     @AfterEach
-    private void afterEach() throws InterruptedException {
+    public void afterEach() throws InterruptedException {
         executorService.shutdown();
         executorService.awaitTermination(30, TimeUnit.SECONDS);
     }
