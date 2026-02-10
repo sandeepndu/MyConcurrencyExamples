@@ -13,7 +13,8 @@ public class BlockingQueueWithConditionalVariable<T> implements BlockingQueue<T>
     private static final Logger logger = LoggerFactory.getLogger(BlockingQueueWithConditionalVariable.class);
     private final int capacity;
     private final Lock lock = new ReentrantLock();
-    private final Condition condition = lock.newCondition();
+    private final Condition notFull = lock.newCondition();
+    private final Condition notEmpty = lock.newCondition();
     private final Queue<T> queue = new LinkedList<>();
 
     public BlockingQueueWithConditionalVariable(int capacity) {
@@ -27,27 +28,33 @@ public class BlockingQueueWithConditionalVariable<T> implements BlockingQueue<T>
     @Override
     public void offer(T element) throws InterruptedException {
         lock.lock();
-        while (queue.size() == capacity) {
-            logger.info("Queue is full. Waiting for a slot to insert {}. Size: {}", element, queue.size());
-            condition.await();
+        try {
+            while (queue.size() == capacity) {
+                logger.info("Queue is full. Waiting for a slot to insert {}. Size: {}", element, queue.size());
+                notFull.await();
+            }
+            queue.offer(element);
+            logger.info("Pushed {} to queue. Size: {}", element, queue.size());
+            notEmpty.signal();
+        } finally {
+            lock.unlock();
         }
-        queue.offer(element);
-        logger.info("Pushed {} to queue. Size: {}", element, queue.size());
-        condition.signalAll();
-        lock.unlock();
     }
 
     @Override
     public T poll() throws InterruptedException {
         lock.lock();
-        while (queue.isEmpty()) {
-            logger.info("Waiting for something to be inserted to queue. Size: {}", queue.size());
-            condition.await();
+        try {
+            while (queue.isEmpty()) {
+                logger.info("Waiting for something to be inserted to queue. Size: 0");
+                notEmpty.await();
+            }
+            T element = queue.poll();
+            logger.info("Removed {} from queue. Size: {}", element, queue.size());
+            notFull.signal();
+            return element;
+        } finally {
+            lock.unlock();
         }
-        T element = queue.poll();
-        logger.info("Removed {} from queue. Size: {}", element, queue.size());
-        condition.signalAll();
-        lock.unlock();
-        return element;
     }
 }

@@ -36,8 +36,8 @@ public class BlockingQueueWithWaitNotify<T> implements BlockingQueue<T> {
     public T poll() throws InterruptedException {
         synchronized (queue) {
             while (queue.isEmpty()) {
-                logger.info("Waiting for something to be inserted to queue. Size: {}", queue.size());
-                wait();
+                logger.info("Waiting for something to be inserted to queue. Size: 0");
+                queue.wait();
             }
             T element = queue.poll();
             logger.info("Removed {} from queue. Size: {}", element, queue.size());

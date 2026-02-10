@@ -13,6 +13,7 @@ public class BlockingQueueWithSemaphores<T> implements BlockingQueue<T> {
     private final Semaphore writeSemaphore;
     private final Semaphore pollSemaphore;
     private final Queue<T> queue = new LinkedList<>();
+    private final Object lock = new Object();
 
     public BlockingQueueWithSemaphores(int capacity) {
         this.capacity = capacity;
@@ -29,22 +30,28 @@ public class BlockingQueueWithSemaphores<T> implements BlockingQueue<T> {
     @Override
     public void offer(T element) throws InterruptedException {
         writeSemaphore.acquire();
-        synchronized (this) {
-            queue.offer(element);
-            logger.info("Pushed {} to queue. Size: {}", element, queue.size());
+        try {
+            synchronized (lock) {
+                queue.offer(element);
+                logger.info("Pushed {} to queue. Size: {}", element, queue.size());
+            }
+        } finally {
+            pollSemaphore.release();
         }
-        pollSemaphore.release();
     }
 
     @Override
     public T poll() throws InterruptedException {
         pollSemaphore.acquire();
-        final T element;
-        synchronized (this) {
-            element = queue.poll();
-            logger.info("Removed {} from queue. Size: {}", element, queue.size());
+        try {
+            final T element;
+            synchronized (lock) {
+                element = queue.poll();
+                logger.info("Removed {} from queue. Size: {}", element, queue.size());
+            }
+            return element;
+        } finally {
+            writeSemaphore.release();
         }
-        writeSemaphore.release();
-        return element;
     }
 }
