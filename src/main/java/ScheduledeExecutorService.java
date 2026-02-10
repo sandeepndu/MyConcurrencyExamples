@@ -1,4 +1,4 @@
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Comparator;
 import java.util.PriorityQueue;
@@ -39,7 +39,7 @@ public class ScheduledeExecutorService {
             if(shutdown)
                 return;
             final long scheduledTimestamp = System.currentTimeMillis() + delayInSeconds * 1000;
-            queue.add(new Pair<>(task, scheduledTimestamp));
+            queue.add(Pair.of(task, scheduledTimestamp));
             scheduler.interrupt();
         }
 
